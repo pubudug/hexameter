@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Hexameter by Hexworks</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hexworks/hexameter">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/Hexworks/hexameter/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/Hexworks/hexameter/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Hexameter</h1>
+          <p>Hexameter is a GUI agnostic hexagonal grid library written in java.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hexworks">Hexworks</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a id="hexameter" class="anchor" href="#hexameter" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hexameter</h1>
+
+<p>Hexameter is a hexagonal grid library. The motivation behind it is to have
+an optimized, simple and usable library for drawing hexagonal grids without
+being tied to any GUI framework.
+It is <strong>100% unit tested</strong>.</p>
+
+<p><a href="https://travis-ci.org/Hexworks/hexameter"><img src="https://api.travis-ci.org/Hexworks/hexameter.svg" alt="Build Status"></a></p>
+
+<h1>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h1>
+
+<p>This library uses <a href="http://www.redblobgames.com/grids/hexagons/">Amit's guide to hexagonal grids</a>. The coordinate system
+by this library is the Axial coordinate system. Please check <a href="http://www.redblobgames.com/grids/hexagons/#coordinates">here</a> for
+further details.</p>
+
+<p>Hexagonal grids come in <strong>flat topped</strong> and <strong>pointy topped</strong> shapes. The grid can have several layouts:</p>
+
+<ul>
+<li>Hexagonal: the width and height of a this layout has to be equal and both have to be an odd number.</li>
+<li>Triangular: the width and height of a this layout has to be equal.</li>
+<li>Rectangular: no special rules</li>
+<li>Trapezoid: no special rules</li>
+<li>Empty: no special rules</li>
+</ul>
+
+<p>Apart from the <em>Empty</em> grid layout all layouts have <em>with</em> and <em>height</em> values of at least <strong>1</strong>. You can consult <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridLayout.java">HexagonalGridLayout</a> if you need further details.</p>
+
+<p>This library is not tied to any GUI implementation. All operations provided by the <a href="https://github.com/adam-arold/hexameter/tree/master/hexameter-core/src/main/java/org/codetome/hexameter/api">API</a> are working using the most abstract concept possible.</p>
+
+<h2>
+<a id="basic-usage" class="anchor" href="#basic-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic usage</h2>
+
+<h3>
+<a id="creating-a-grid" class="anchor" href="#creating-a-grid" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a grid</h3>
+
+<p>You can use the <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridBuilder.java">HexagonalGridBuilder</a> from the API package to create a <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGrid.java">HexagonalGrid</a>:</p>
+
+<pre><code>// ...
+private static final int GRID_HEIGHT = 9;
+private static final int GRID_WIDTH = 9;
+private static final HexagonalGridLayout GRID_LAYOUT = RECTANGULAR;
+private static final HexagonOrientation ORIENTATION = FLAT_TOP;
+private static final double RADIUS = 30;
+
+// ...
+HexagonalGriBuilder builder = new HexagonalGridBuilder()
+    .setGridHeight(GRID_HEIGHT)
+    .setGridWidth(GRID_WIDTH)
+    .setGridLayout(GRID_LAYOUT)
+    .setOrientation(ORIENTATION)
+    .setRadius(RADIUS);
+
+HexagonalGrid grid = builder.build();
+</code></pre>
+
+<p>You can also use the <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridBuilder.java">HexagonalGridBuilder</a> to create a <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridCalculator.java">HexagonalGridCalculator</a> for you which supports advanced operations
+on <a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGrid.java">HexagonalGrid</a>s:</p>
+
+<pre><code>HexagonalGridCalculator calculator = builder.buildCalculatorFor(grid);
+</code></pre>
+
+<h3>
+<a id="drawing-a-grid" class="anchor" href="#drawing-a-grid" aria-hidden="true"><span class="octicon octicon-link"></span></a>Drawing a grid</h3>
+
+<p>First you want to fetch all the <code>Hexagon</code>s from your grid:</p>
+
+<pre><code>Collection&lt;Hexagon&gt; hexagons = grid.getHexagons();
+</code></pre>
+
+<p>After that you can iterate over all the <code>Point</code>s of your <code>Hexagon</code>s:</p>
+
+<pre><code>hexagons.forEach(hexagon -&gt; {
+    hexagon.getPoints().forEach(point -&gt; {
+        // your draw logic here
+    });
+});
+</code></pre>
+
+<p>Note that each <code>Point</code> represents a coordinate in 2D space. You can use them for drawing.</p>
+
+<h3>
+<a id="manipulating-your-grid" class="anchor" href="#manipulating-your-grid" aria-hidden="true"><span class="octicon octicon-link"></span></a>Manipulating your grid</h3>
+
+<p>There are basically only three operations for manipulating the data on your grid:</p>
+
+<ul>
+<li>The <code>addHexagon(AxialCoordinate coordinate)</code> operation which adds a <code>Hexagon</code> at an arbitrary coordinate.</li>
+<li>The <code>removeHexagon(AxialCoordinate coordinate)</code> operation which removes a <code>Hexagon</code> at an arbitrary coordinate.</li>
+<li>The <code>setSatelliteData(T data)</code> operation which you can use to add arbitrary data to any <code>Hexagon</code>
+</li>
+</ul>
+
+<p>There is also a <code>clearSatelliteData()</code> method for clearing all satellite data from your grid.</p>
+
+<p>Note that adding or removing a <code>Hexagon</code> does not interfere with other operations on the grid. If for example you
+get a range of <code>Hexagon</code>s using the <code>getHexagonsByAxialRange</code> method it will simply ignore any missing <code>Hexagon</code>s.</p>
+
+<p>If you don't want to use the provided layouts you can use the <code>EMPTY</code> layout and fill your grid by using the <code>addHexagon</code> method.</p>
+
+<h3>
+<a id="gui-example" class="anchor" href="#gui-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>GUI example:</h3>
+
+<p>You can find a simple GUI example in the <code>hexameter-swt-example</code> submodule. Run it by doing the following steps.</p>
+
+<ol>
+<li>Clone the project: <code>git clone git@github.com:adam-arold/hexameter.git</code>
+</li>
+<li>cd to the newly created <code>hexameter</code> folder: <code>cd hexameter/</code>
+</li>
+<li>build the project: <code>mvn clean install</code>
+</li>
+<li>run the created uberjar: <code>java -jar ./hexameter-swt-example/target/hexameter-swt-example-1.0.0.jar</code>
+</li>
+</ol>
+
+<h3>
+<a id="supported-operations" class="anchor" href="#supported-operations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported operations</h3>
+
+<ul>
+<li>Getting a hexagon by its grid coordinate</li>
+<li>Getting a hexagon by its pixel coordinate</li>
+<li>Getting the neighbors of a hexagon</li>
+<li>Calculating the distance between two hexagons</li>
+<li>Calculating the movement range from a hexagon</li>
+<li>Adding/removing a Hexagon from the grid</li>
+<li>Checking whether a Hexagon is on a grid or not</li>
+<li>Supplying a custom storage object</li>
+<li>Adding custom data to a Hexagon</li>
+<li>Clearing all custom data from the HexagonalGrid</li>
+<li>Getting a subset of Hexagons (using axial or offset cooridnate range) from the grid</li>
+</ul>
+
+<p>Check these interfaces for more details:</p>
+
+<ul>
+<li><a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridBuilder.java">HexagonalGridBuilder</a></li>
+<li><a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGrid.java">HexagonalGrid</a></li>
+<li><a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/HexagonalGridCalculator.java">HexagonalGridCalculator</a></li>
+<li><a href="https://github.com/adam-arold/hexameter/blob/master/hexameter-core/src/main/java/org/codetome/hexameter/api/Hexagon.java">Hexagon</a></li>
+</ul>
+
+<h2>
+<a id="roadmap" class="anchor" href="#roadmap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roadmap:</h2>
+
+<ul>
+<li>Field of view calculation with obstacles</li>
+<li>Pathfinding with obstacles</li>
+<li>Movement range with obstacles</li>
+</ul>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Hexameter is made available under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.</p>
+
+<h2>
+<a id="credits" class="anchor" href="#credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Credits</h2>
+
+<p>Hexameter is created and maintained by Adam Arold</p>
+
+<p><em>I'm open to suggestions, feel free to comment or to send me a message.
+Pull reqeusts are also welcome!</em></p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
