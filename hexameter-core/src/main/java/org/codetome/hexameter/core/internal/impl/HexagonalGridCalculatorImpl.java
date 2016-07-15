@@ -83,7 +83,7 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
     public List<Hexagon> drawLine(Hexagon from, Hexagon to) {
         int distance = calculateDistanceBetween(from, to);
         List<Hexagon> results = new LinkedList<>();
-        for (int i = 0; i <= distance; i++) {
+        for (int i = 0; distance > 0 && i <= distance; i++) {
             CubeCoordinate interpolatedCoordinate = cubeLinearInterpolate(from.getCubeCoordinate(),
                     to.getCubeCoordinate(), (1.0 / distance) * i);
             results.add(hexagonalGrid.getByCubeCoordinate(interpolatedCoordinate).get());
@@ -117,4 +117,19 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
         }
         return CubeCoordinate.fromCoordinates(rx, rz);
     }
+
+    @Override
+    public boolean isVisible(Hexagon hexagon, Hexagon from) {
+        List<Hexagon> traversePath = drawLine(from, hexagon);
+        for (Hexagon pathHexagon : traversePath) {
+            if (pathHexagon.equals(from) || pathHexagon.equals(hexagon)) {
+                continue;
+            }
+            if (pathHexagon.getSatelliteData().isPresent() && !pathHexagon.getSatelliteData().get().isPassable()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }

@@ -64,8 +64,10 @@ public class DemoComposite extends Composite {
     private boolean showNeighbors = false;
     private boolean showMovementRange = false;
     private boolean showLineDrawing = false;
+    private boolean showVisibilityDrawing = false;
     private Hexagon prevSelected = null;
     private Hexagon currSelected = null;
+    private Hexagon currMouseOver = null;
     private int movementRange;
     private Font font;
     private int fontSize;
@@ -209,9 +211,24 @@ public class DemoComposite extends Composite {
         toggleNeighborsCheck.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         toggleNeighborsCheck.setText("Toggle neighbors");
         
+        final Button toggleVisibleHexFilling = new Button(grpControls, SWT.CHECK);
+        toggleVisibleHexFilling.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+        toggleVisibleHexFilling.setText("Toggle visibility ");
+        toggleVisibleHexFilling.setToolTipText("Selected hexes will be considered obstacles. If the current mouseover "
+                + "hex is visible from last selected hex, it will be filled in green. Red if not.");
+        toggleVisibleHexFilling.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent event) {
+                showVisibilityDrawing = toggleVisibleHexFilling.getSelection();
+                canvas.redraw();
+            }
+        });
+        
         final Button toggleLineDrawing = new Button(grpControls, SWT.CHECK);
         toggleLineDrawing.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         toggleLineDrawing.setText("Toggle line drawing");
+        toggleLineDrawing.setToolTipText("The hexes in path from last selected hex to the"
+                + " mouseover hex will be drawn with a red border");
         toggleLineDrawing.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent event) {
@@ -332,6 +349,12 @@ public class DemoComposite extends Composite {
             public void mouseMove(MouseEvent event) {
                 xPositionText.setText(event.x + "");
                 yPositionText.setText(event.y + "");
+                Optional<Hexagon> currMouseOverOptional = hexagonalGrid.getByPixelCoordinate(event.x, event.y);
+                if(currMouseOverOptional.isPresent() && showLineDrawing)
+                {
+                    currMouseOver = currMouseOverOptional.get();
+                    canvas.redraw();
+                }
             }
         });
 
@@ -357,6 +380,7 @@ public class DemoComposite extends Composite {
                         data = new SatelliteDataImpl();
                     }
                     data.setSelected(!data.isSelected());
+                    data.setPassable(!data.isSelected());
                     hex.setSatelliteData(data);
                 }
                 canvas.redraw();
@@ -374,6 +398,7 @@ public class DemoComposite extends Composite {
             Color darkGray = getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
             Color yellow = getDisplay().getSystemColor(SWT.COLOR_YELLOW);
             Color red = getDisplay().getSystemColor(SWT.COLOR_RED);
+            Color green = getDisplay().getSystemColor(SWT.COLOR_GREEN);
 
             public void paintControl(final PaintEvent event) {
                 event.gc.setLineWidth(2);
@@ -382,8 +407,10 @@ public class DemoComposite extends Composite {
                 event.gc.fillRectangle(new Rectangle(0, 0, shellWidth, shellHeight));
 
                 final List<Hexagon> lineHexes;
-                if (prevSelected != null && currSelected != null && showLineDrawing) {
-                    lineHexes = hexagonalGridCalculator.drawLine(prevSelected, currSelected);
+                final boolean canDrawLine = (prevSelected != null || currSelected != null) && currMouseOver != null;
+                if (canDrawLine && showLineDrawing) {
+                    lineHexes = hexagonalGridCalculator.drawLine(currSelected != null ? currSelected : prevSelected,
+                            currMouseOver);
                 } else {
                     lineHexes = Collections.emptyList();
                 }
@@ -419,10 +446,39 @@ public class DemoComposite extends Composite {
                         if (lineHexes.contains(hexagon)) {
                             drawLineHexagon(event.gc, hexagon);
                         }
+                        if(canDrawLine && showVisibilityDrawing) {
+                            boolean visible = hexagonalGridCalculator.isVisible(currMouseOver,
+                                    currSelected != null ? currSelected : prevSelected);
+                            if(visible){
+                                drawVisibleHexagon(event.gc, currMouseOver);
+                            }else{
+                                drawNotVisibleHexagon(event.gc, currMouseOver);
+                            }
+                        }
                     }
                 });
             }
 
+            private void drawVisibleHexagon(GC gc, Hexagon hexagon) {
+                gc.setBackground(green);
+                gc.fillPolygon(convertToPointsArr(hexagon.getPoints()));
+                int previousLineWidth = gc.getLineWidth();
+                gc.setLineWidth(3);
+                gc.setForeground(red);
+                gc.drawPolygon(convertToPointsArr(hexagon.getPoints()));
+                gc.setLineWidth(previousLineWidth);;
+            }
+            
+            private void drawNotVisibleHexagon(GC gc, Hexagon hexagon) {
+                gc.setBackground(red);
+                gc.fillPolygon(convertToPointsArr(hexagon.getPoints()));
+                int previousLineWidth = gc.getLineWidth();
+                gc.setLineWidth(3);
+                gc.setForeground(red);
+                gc.drawPolygon(convertToPointsArr(hexagon.getPoints()));
+                gc.setLineWidth(previousLineWidth);
+            }
+            
             private void drawNeighborHexagon(GC gc, Hexagon hexagon) {
                 gc.setForeground(white);
                 gc.setBackground(darkGray);

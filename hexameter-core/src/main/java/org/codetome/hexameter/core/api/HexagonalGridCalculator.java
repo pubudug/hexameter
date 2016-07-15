@@ -69,4 +69,6 @@ public interface HexagonalGridCalculator {
      * @return A list of hexagons
      */
     List<Hexagon> drawLine(Hexagon from, Hexagon to);
+    
+    boolean isVisible(Hexagon hexagon, Hexagon from);
 }
