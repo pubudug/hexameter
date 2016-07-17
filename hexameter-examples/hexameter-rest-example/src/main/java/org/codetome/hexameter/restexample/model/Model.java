@@ -1,7 +1,12 @@
 package org.codetome.hexameter.restexample.model;
 
+import org.codetome.hexameter.core.api.CubeCoordinate;
+import org.codetome.hexameter.core.api.Hexagon;
+import org.codetome.hexameter.core.api.HexagonFactory;
 import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridBuilder;
+import org.codetome.hexameter.core.internal.GridData;
+import org.codetome.hexameter.core.internal.impl.HexagonImpl;
 import org.codetome.hexameter.core.internal.impl.HexagonalGridImpl;
 import org.codetome.hexameter.restexample.payload.HexagonBuilderPayload;
 
@@ -32,6 +37,13 @@ public class Model {
                 .setGridWidth(payload.getGridWidth())
                 .setGridLayout(payload.getGridLayout())
                 .setOrientation(payload.getOrientation())
+                .setHexagonFactory(new HexagonFactory<Hexagon>() {
+
+                    @Override
+                    public Hexagon create(GridData gridData, CubeCoordinate coordinate) {
+                        return new HexagonImpl(gridData, coordinate);
+                    }
+                })
                 .setRadius(payload.getRadius()).build();
         return (HexagonalGridImpl) grid;
     }

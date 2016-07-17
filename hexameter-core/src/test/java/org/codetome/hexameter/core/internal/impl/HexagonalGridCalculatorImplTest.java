@@ -1,7 +1,9 @@
 package org.codetome.hexameter.core.internal.impl;
 
 import org.codetome.hexameter.core.TestHexagonFactory;
+import org.codetome.hexameter.core.api.CubeCoordinateTest;
 import org.codetome.hexameter.core.api.Hexagon;
+import org.codetome.hexameter.core.api.HexagonAttributes;
 import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridBuilder;
 import org.codetome.hexameter.core.api.HexagonalGridCalculator;
@@ -32,7 +34,9 @@ public class HexagonalGridCalculatorImplTest {
     @Mock
     private Hexagon targetHex;
     private RotationDirection rotationDirection;
-
+    
+    private TestHexagonAttributes testHexagonAttributes = new TestHexagonAttributes();
+    
     @Before
     public void setUp() throws Exception {
         initMocks(this);
@@ -40,7 +44,7 @@ public class HexagonalGridCalculatorImplTest {
                 .setGridHeight(10).setGridWidth(10).setRadius(10);
         builder.setHexagonFactory(new TestHexagonFactory());
         grid = builder.build();
-        target = builder.buildCalculatorFor(grid);
+        target = builder.buildCalculatorFor(grid, testHexagonAttributes);
     }
 
     @Test
@@ -108,6 +112,27 @@ public class HexagonalGridCalculatorImplTest {
                         grid.getByCubeCoordinate(fromCoordinates(7, 2)).get(),
                         grid.getByCubeCoordinate(fromCoordinates(8, 1)).get()),
                 actual);
+    }
+    
+    
+    @Test
+    public void shouldProperlyCalculateShortestPath() {
+        TestHexagon from = grid.getByCubeCoordinate(fromCoordinates(-2, 4)).get();
+        TestHexagon to = grid.getByCubeCoordinate(fromCoordinates(4, 4)).get();
+        testHexagonAttributes.setCost(10000, fromCoordinates(2, 2), fromCoordinates(1, 3), fromCoordinates(1, 4),
+                fromCoordinates(0, 5),  fromCoordinates(-2, 5));
+        testHexagonAttributes.setCost(2, fromCoordinates(2,5) ,fromCoordinates(1, 6));
+        List<TestHexagon> actual = target.findShortestPath(from, to);
+        assertEquals(Arrays.asList(
+                grid.getByCubeCoordinate(fromCoordinates(-2, 4)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(-1, 4)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(-1, 5)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(-1, 6)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(0, 6)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(1, 5)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(2, 4)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(3, 4)).get(),
+                grid.getByCubeCoordinate(fromCoordinates(4, 4)).get()), actual);
     }
 
     @Test

@@ -457,9 +457,9 @@ public class DemoComposite extends Composite {
                 int gridZ = -(gridX + gridY);
                 gc.setFont(font);
                 gc.setForeground(red);
-                gc.drawString("gridX:" + gridX, (int) hexagon.getCenterX() - fontSize, (int) (hexagon.getCenterY() - fontSize * 2.5), true);
-                gc.drawString("gridY:" + gridY, (int) (hexagon.getCenterX() - fontSize * 2.8), (int) hexagon.getCenterY() + fontSize / 3, true);
-                gc.drawString("gridZ:" + gridZ, (int) (hexagon.getCenterX() + fontSize / 3), (int) (hexagon.getCenterY() + fontSize / 3), true);
+                gc.drawString("x:" + gridX, (int) hexagon.getCenterX() - fontSize, (int) (hexagon.getCenterY() - fontSize * 2.5), true);
+                gc.drawString("y:" + gridY, (int) hexagon.getCenterX() - fontSize, (int) hexagon.getCenterY() - fontSize, true);
+                gc.drawString("z:" + gridZ, (int) hexagon.getCenterX() - fontSize, (int) (hexagon.getCenterY() + fontSize / 3), true);
             }
 
             private int[] convertToPointsArr(Collection<Point> points) {
@@ -493,7 +493,7 @@ public class DemoComposite extends Composite {
                     .setGridLayout(hexagonGridLayout)
                     .setHexagonFactory(new SWTExampleHexagonFactory());
             hexagonalGrid = builder.build();
-            hexagonalGridCalculator = builder.buildCalculatorFor(hexagonalGrid);
+            hexagonalGridCalculator = builder.buildCalculatorFor(hexagonalGrid, null);
         } catch (HexagonalGridCreationException e) {
             final Shell dialog = new Shell(canvas.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
             dialog.setLayout(new RowLayout());

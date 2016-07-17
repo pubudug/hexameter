@@ -61,8 +61,8 @@ public final class  HexagonalGridBuilder<T extends Hexagon> {
      * @param hexagonalGrid grid
      * @return calculator
      */
-    public HexagonalGridCalculator<T> buildCalculatorFor(final HexagonalGrid<T> hexagonalGrid) {
-        return new HexagonalGridCalculatorImpl<T>(hexagonalGrid);
+    public HexagonalGridCalculator<T> buildCalculatorFor(final HexagonalGrid<T> hexagonalGrid, HexagonAttributes<T> hexagonAttributes) {
+        return new HexagonalGridCalculatorImpl<T>(hexagonalGrid, hexagonAttributes);
     }
 
     public double getRadius() {

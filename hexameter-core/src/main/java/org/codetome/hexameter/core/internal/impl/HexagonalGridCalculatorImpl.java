@@ -2,14 +2,22 @@ package org.codetome.hexameter.core.internal.impl;
 
 import org.codetome.hexameter.core.api.CubeCoordinate;
 import org.codetome.hexameter.core.api.Hexagon;
+import org.codetome.hexameter.core.api.HexagonAttributes;
 import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridCalculator;
 import org.codetome.hexameter.core.api.RotationDirection;
 import org.codetome.hexameter.core.backport.Optional;
+import org.omg.CORBA.Current;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 import static java.lang.Math.abs;
@@ -20,8 +28,10 @@ import static java.lang.Math.round;
 public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements HexagonalGridCalculator<T> {
 
     private final HexagonalGrid<T> hexagonalGrid;
+    private HexagonAttributes<T> hexagonAttributes;
 
-    public HexagonalGridCalculatorImpl(final HexagonalGrid<T> hexagonalGrid) {
+    public HexagonalGridCalculatorImpl(final HexagonalGrid<T> hexagonalGrid, HexagonAttributes<T> hexagonAttributes) {
+        this.hexagonAttributes = hexagonAttributes;
         this.hexagonalGrid = hexagonalGrid;
     }
 
@@ -117,4 +127,53 @@ public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements Hex
         }
         return CubeCoordinate.fromCoordinates(rx, rz);
     }
+
+    @Override
+    public List<T> findShortestPath(T from, T to) {
+        Map<T, Double> estimatedCost = new HashMap<>();
+        Map<T, Double> cost = new HashMap<>();
+        Map<T, T> cameFrom = new HashMap<>();
+        Queue<T> queue = new PriorityQueue<>(new Comparator<T>() {
+
+            @Override
+            public int compare(T o1, T o2) {
+                return estimatedCost.get(o1) - estimatedCost.get(o2) > 0 ? 1 : -1;
+            }
+
+        });
+        cameFrom.put(from, null);
+        estimatedCost.put(from, 0.0);
+        cost.put(from, 0.0);
+        queue.add(from);
+
+        while (!queue.isEmpty()) {
+            T current = queue.poll();
+            if (current.equals(to)) {
+                break;
+            }
+            for (T next : hexagonalGrid.getNeighborsOf(current)) {
+                double newCost = cost.get(current) + hexagonAttributes.getMovementCost(next);
+                if (!cost.containsKey(next) || newCost < cost.get(next)) {
+                    cost.put(next, newCost);
+                    estimatedCost.put(next, newCost);
+                    queue.add(next);
+                    cameFrom.put(next, current);
+                }
+            }
+        }
+        return backtrackShortestPath(to, cameFrom);
+    }
+
+    private List<T> backtrackShortestPath(T to, Map<T, T> cameFrom) {
+        List<T> result = new LinkedList<>();
+        result.add(to);
+        T previous = to;
+        while (cameFrom.get(previous) != null) {
+            result.add(cameFrom.get(previous));
+            previous = cameFrom.get(previous);
+        }
+        Collections.reverse(result);
+        return result;
+    }
+    
 }

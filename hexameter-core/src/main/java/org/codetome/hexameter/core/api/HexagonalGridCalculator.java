@@ -69,4 +69,7 @@ public interface HexagonalGridCalculator<T extends Hexagon> {
      * @return A list of hexagons
      */
     List<T> drawLine(Hexagon from, Hexagon to);
+    
+    
+    List<T> findShortestPath(T from, T to);
 }

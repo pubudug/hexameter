@@ -81,7 +81,7 @@ public class HexagonalGridBuilderTest {
 
     @Test
     public void shouldBuildCalculatorWhenBuildCalculatorIsCalled() {
-        final HexagonalGridCalculator calc = target.buildCalculatorFor(null);
+        final HexagonalGridCalculator calc = target.buildCalculatorFor(null, null);
         assertNotNull(calc);
     }
 
