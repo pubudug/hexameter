@@ -7,7 +7,6 @@ import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridCalculator;
 import org.codetome.hexameter.core.api.RotationDirection;
 import org.codetome.hexameter.core.backport.Optional;
-import org.omg.CORBA.Current;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -130,9 +129,14 @@ public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements Hex
 
     @Override
     public List<T> findShortestPath(T from, T to) {
-        Map<T, Double> estimatedCost = new HashMap<>();
+        final Map<T, Double> estimatedCost = new HashMap<>();
         Map<T, Double> cost = new HashMap<>();
         Map<T, T> cameFrom = new HashMap<>();
+
+        estimatedCost.put(from, 0.0);
+        cost.put(from, 0.0);
+        cameFrom.put(from, null);
+
         Queue<T> queue = new PriorityQueue<>(new Comparator<T>() {
 
             @Override
@@ -141,9 +145,6 @@ public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements Hex
             }
 
         });
-        cameFrom.put(from, null);
-        estimatedCost.put(from, 0.0);
-        cost.put(from, 0.0);
         queue.add(from);
 
         while (!queue.isEmpty()) {
@@ -175,5 +176,5 @@ public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements Hex
         Collections.reverse(result);
         return result;
     }
-    
+
 }
