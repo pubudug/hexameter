@@ -18,7 +18,7 @@ import java.util.Collection;
  * the vertical Y axis.
  * </p>
  */
-public interface HexagonalGrid {
+public interface HexagonalGrid<T extends Hexagon> {
 
     /**
      * Returns this HexagonalGrid's GridData.
@@ -32,7 +32,7 @@ public interface HexagonalGrid {
      *
      * @return hexagons
      */
-    Observable<Hexagon> getHexagons();
+    Observable<T> getHexagons();
 
     /**
      * Returns all {@link Hexagon}s contained in the given cube coordinate range.
@@ -42,7 +42,7 @@ public interface HexagonalGrid {
      * @param to   to
      * @return {@link Hexagon}s in the given range.
      */
-    Observable<Hexagon> getHexagonsByCubeRange(CubeCoordinate from, CubeCoordinate to);
+    Observable<T> getHexagonsByCubeRange(CubeCoordinate from, CubeCoordinate to);
 
     /**
      * Returns all {@link Hexagon}s contained in the given offset coordinate range.
@@ -54,7 +54,7 @@ public interface HexagonalGrid {
      * @param gridYTo   to z inclusive
      * @return {@link Hexagon}s in the given range.
      */
-    Observable<Hexagon> getHexagonsByOffsetRange(int gridXFrom, int gridXTo, int gridYFrom, int gridYTo);
+    Observable<T> getHexagonsByOffsetRange(int gridXFrom, int gridXTo, int gridYFrom, int gridYTo);
 
     /**
      * Tells whether the given cube coordinate is on the grid or not.
@@ -71,7 +71,7 @@ public interface HexagonalGrid {
      * @param coordinate coord
      * @return Optional with a Hexagon if it is present
      */
-    Optional<Hexagon> getByCubeCoordinate(CubeCoordinate coordinate);
+    Optional<T> getByCubeCoordinate(CubeCoordinate coordinate);
 
     /**
      * Returns a {@link Hexagon} by a pixel coordinate.
@@ -82,14 +82,14 @@ public interface HexagonalGrid {
      * @param coordinateY pixel coordinateY coordinate
      * @return Optional with a Hexagon if it is present
      */
-    Optional<Hexagon> getByPixelCoordinate(double coordinateX, double coordinateY);
+    Optional<T> getByPixelCoordinate(double coordinateX, double coordinateY);
 
     /**
      * Returns a neighbor of a Hexagon by its neighbor index.
      *
      * @return neighbor or empty Optional if not applicable
      */
-    Optional<Hexagon> getNeighborByIndex(Hexagon hexagon, int index);
+    Optional<T> getNeighborByIndex(Hexagon hexagon, int index);
 
     /**
      * Returns all neighbors of a {@link Hexagon}.
@@ -97,10 +97,6 @@ public interface HexagonalGrid {
      * @param hexagon {@link Hexagon}
      * @return the {@link Hexagon}'s neighbors
      */
-    Collection<Hexagon> getNeighborsOf(Hexagon hexagon);
+    Collection<T> getNeighborsOf(Hexagon hexagon);
 
-    /**
-     * Clears all satellite data attached to the {@link Hexagon}s in this grid.
-     */
-    void clearSatelliteData();
 }

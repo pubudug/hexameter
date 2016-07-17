@@ -1,5 +1,6 @@
 package org.codetome.hexameter.core.internal.impl;
 
+import org.codetome.hexameter.core.TestHexagonFactory;
 import org.codetome.hexameter.core.api.Hexagon;
 import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridBuilder;
@@ -23,8 +24,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class HexagonalGridCalculatorImplTest {
 
-    private HexagonalGrid grid;
-    private HexagonalGridCalculator target;
+    private HexagonalGrid<TestHexagon> grid;
+    private HexagonalGridCalculator<TestHexagon> target;
 
     @Mock
     private Hexagon originalHex;
@@ -35,8 +36,9 @@ public class HexagonalGridCalculatorImplTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        final HexagonalGridBuilder builder = new HexagonalGridBuilder()
+        final HexagonalGridBuilder<TestHexagon> builder = new HexagonalGridBuilder<TestHexagon>()
                 .setGridHeight(10).setGridWidth(10).setRadius(10);
+        builder.setHexagonFactory(new TestHexagonFactory());
         grid = builder.build();
         target = builder.buildCalculatorFor(grid);
     }
@@ -59,7 +61,7 @@ public class HexagonalGridCalculatorImplTest {
         expected.add(grid.getByCubeCoordinate(fromCoordinates(3, 8)).get());
         expected.add(grid.getByCubeCoordinate(fromCoordinates(2, 8)).get());
         expected.add(grid.getByCubeCoordinate(fromCoordinates(2, 7)).get());
-        final Set<Hexagon> actual = target.calculateMovementRangeFrom(hex, 1);
+        final Set<TestHexagon> actual = target.calculateMovementRangeFrom(hex, 1);
         assertEquals(expected, actual);
     }
 
@@ -88,13 +90,13 @@ public class HexagonalGridCalculatorImplTest {
         expected.add(grid.getByCubeCoordinate(fromCoordinates(3, 9)).get());
         expected.add(grid.getByCubeCoordinate(fromCoordinates(2, 9)).get());
 
-        final Set<Hexagon> actual = target.calculateMovementRangeFrom(hex, 2);
+        final Set<TestHexagon> actual = target.calculateMovementRangeFrom(hex, 2);
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldProperlyCalculateLine() {
-        List<Hexagon> actual = target.drawLine(grid.getByCubeCoordinate(fromCoordinates(3, 7)).get(),
+        List<TestHexagon> actual = target.drawLine(grid.getByCubeCoordinate(fromCoordinates(3, 7)).get(),
                 grid.getByCubeCoordinate(fromCoordinates(8, 1)).get()); 
         assertEquals(
                 Arrays.asList(
@@ -112,7 +114,7 @@ public class HexagonalGridCalculatorImplTest {
     public void shouldProperlyCalculateRotationWhenGivenAValidGrid() {
         configureMockitoForRotation();
 
-        final Optional<Hexagon> resultOpt = target.rotateHexagon(originalHex, targetHex, RotationDirection.RIGHT);
+        final Optional<TestHexagon> resultOpt = target.rotateHexagon(originalHex, targetHex, RotationDirection.RIGHT);
 
         Hexagon result = resultOpt.get();
 
@@ -125,7 +127,7 @@ public class HexagonalGridCalculatorImplTest {
     public void shouldProperlyCalculateRingWhenGivenValidParameters() {
         when(targetHex.getGridX()).thenReturn(0);
         when(targetHex.getGridZ()).thenReturn(0);
-        final Set<Hexagon> result = target.calculateRingFrom(targetHex, 3);
+        final Set<TestHexagon> result = target.calculateRingFrom(targetHex, 3);
     }
 
     private void configureMockitoForRotation() {

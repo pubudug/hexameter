@@ -54,8 +54,8 @@ public class DemoComposite extends Composite {
     private static final HexagonOrientation DEFAULT_ORIENTATION = POINTY_TOP;
     private static final HexagonalGridLayout DEFAULT_GRID_LAYOUT = RECTANGULAR;
     private static final int CANVAS_WIDTH = 1000;
-    private HexagonalGrid hexagonalGrid;
-    private HexagonalGridCalculator hexagonalGridCalculator;
+    private HexagonalGrid<SWTExampleHexagon> hexagonalGrid;
+    private HexagonalGridCalculator<SWTExampleHexagon> hexagonalGridCalculator;
     private int gridWidth = DEFAULT_GRID_WIDTH;
     private int gridHeight = DEFAULT_GRID_HEIGHT;
     private int radius = DEFAULT_RADIUS;
@@ -339,7 +339,7 @@ public class DemoComposite extends Composite {
         canvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent event) {
-                Hexagon hex = null;
+                SWTExampleHexagon hex = null;
                 try {
                     hex = hexagonalGrid.getByPixelCoordinate(event.x, event.y).get();
                 } catch (NoSuchElementException ex) {
@@ -349,15 +349,8 @@ public class DemoComposite extends Composite {
                     prevSelected = currSelected;
                     currSelected = hex;
                     drawDistance();
-                    Optional<SatelliteDataImpl> dataOptional = hex.<SatelliteDataImpl>getSatelliteData();
                     SatelliteDataImpl data;
-                    if (dataOptional.isPresent()) {
-                        data = dataOptional.get();
-                    } else {
-                        data = new SatelliteDataImpl();
-                    }
-                    data.setSelected(!data.isSelected());
-                    hex.setSatelliteData(data);
+                    hex.setSelected(!hex.isSelected());
                 }
                 canvas.redraw();
             }
@@ -381,17 +374,16 @@ public class DemoComposite extends Composite {
                 event.gc.setBackground(white);
                 event.gc.fillRectangle(new Rectangle(0, 0, shellWidth, shellHeight));
 
-                final List<Hexagon> lineHexes;
+                final List<SWTExampleHexagon> lineHexes;
                 if (prevSelected != null && currSelected != null && showLineDrawing) {
                     lineHexes = hexagonalGridCalculator.drawLine(prevSelected, currSelected);
                 } else {
                     lineHexes = Collections.emptyList();
                 }
-                hexagonalGrid.getHexagons().forEach(new Action1<Hexagon>() {
+                hexagonalGrid.getHexagons().forEach(new Action1<SWTExampleHexagon>() {
                     @Override
-                    public void call(Hexagon hexagon) {
-                        Optional<SatelliteDataImpl> data = hexagon.<SatelliteDataImpl>getSatelliteData();
-                        if (data.isPresent() && data.get().isSelected()) {
+                    public void call(SWTExampleHexagon hexagon) {
+                        if (hexagon.isSelected()) {
                             if (showNeighbors) {
                                 for (Hexagon hex : hexagonalGrid.getNeighborsOf(hexagon)) {
                                     drawNeighborHexagon(event.gc, hex);
@@ -406,11 +398,10 @@ public class DemoComposite extends Composite {
                         drawEmptyHexagon(event.gc, hexagon);
                     }
                 });
-                hexagonalGrid.getHexagons().forEach(new Action1<Hexagon>() {
+                hexagonalGrid.getHexagons().forEach(new Action1<SWTExampleHexagon>() {
                     @Override
-                    public void call(Hexagon hexagon) {
-                        Optional<SatelliteDataImpl> data = hexagon.<SatelliteDataImpl>getSatelliteData();
-                        if (data.isPresent() && data.get().isSelected()) {
+                    public void call(SWTExampleHexagon hexagon) {
+                        if (hexagon.isSelected()) {
                             drawFilledHexagon(event.gc, hexagon);
                         }
                         if (drawCoordinates) {
@@ -500,7 +491,8 @@ public class DemoComposite extends Composite {
                     .setGridHeight(gridHeight)
                     .setRadius(radius)
                     .setOrientation(orientation)
-                    .setGridLayout(hexagonGridLayout);
+                    .setGridLayout(hexagonGridLayout)
+                    .setHexagonFactory(new SWTExampleHexagonFactory());
             hexagonalGrid = builder.build();
             hexagonalGridCalculator = builder.buildCalculatorFor(hexagonalGrid);
         } catch (HexagonalGridCreationException e) {

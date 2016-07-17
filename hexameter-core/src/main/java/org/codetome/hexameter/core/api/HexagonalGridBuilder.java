@@ -6,9 +6,6 @@ import org.codetome.hexameter.core.internal.impl.HexagonalGridCalculatorImpl;
 import org.codetome.hexameter.core.internal.impl.HexagonalGridImpl;
 import org.codetome.hexameter.core.internal.impl.layoutstrategy.GridLayoutStrategy;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static org.codetome.hexameter.core.api.HexagonalGridLayout.RECTANGULAR;
 
 /**
@@ -22,13 +19,13 @@ import static org.codetome.hexameter.core.api.HexagonalGridLayout.RECTANGULAR;
  * </ul>
  * Defaults for orientation and grid layout are POINTY_TOP and RECTANGULAR.
  */
-public final class  HexagonalGridBuilder {
+public final class  HexagonalGridBuilder<T extends Hexagon> {
     private int gridWidth;
     private int gridHeight;
     private double radius;
-    private Map<CubeCoordinate, Object> customStorage = new ConcurrentHashMap<>();
     private HexagonOrientation orientation = HexagonOrientation.POINTY_TOP;
     private HexagonalGridLayout gridLayout = RECTANGULAR;
+    private HexagonFactory<T> hexagonFactory;
 
     /**
      * Builds a {@link HexagonalGrid} using the parameters supplied.
@@ -38,9 +35,9 @@ public final class  HexagonalGridBuilder {
      *
      * @return {@link HexagonalGrid}
      */
-    public HexagonalGrid build() {
+    public HexagonalGrid<T> build() {
         checkParameters();
-        return new HexagonalGridImpl(this);
+        return new HexagonalGridImpl<T>(this);
     }
 
     private void checkParameters() {
@@ -64,8 +61,8 @@ public final class  HexagonalGridBuilder {
      * @param hexagonalGrid grid
      * @return calculator
      */
-    public HexagonalGridCalculator buildCalculatorFor(final HexagonalGrid hexagonalGrid) {
-        return new HexagonalGridCalculatorImpl(hexagonalGrid);
+    public HexagonalGridCalculator<T> buildCalculatorFor(final HexagonalGrid<T> hexagonalGrid) {
+        return new HexagonalGridCalculatorImpl<T>(hexagonalGrid);
     }
 
     public double getRadius() {
@@ -79,7 +76,7 @@ public final class  HexagonalGridBuilder {
      *
      * @return this {@link HexagonalGridBuilder}
      */
-    public HexagonalGridBuilder setRadius(final double radius) {
+    public HexagonalGridBuilder<T> setRadius(final double radius) {
         this.radius = radius;
         return this;
     }
@@ -94,7 +91,7 @@ public final class  HexagonalGridBuilder {
      * @param gridWidth grid width
      * @return this {@link HexagonalGridBuilder}
      */
-    public HexagonalGridBuilder setGridWidth(final int gridWidth) {
+    public HexagonalGridBuilder<T> setGridWidth(final int gridWidth) {
         this.gridWidth = gridWidth;
         return this;
     }
@@ -109,7 +106,7 @@ public final class  HexagonalGridBuilder {
      * @param gridHeight grid height
      * @return this {@link HexagonalGridBuilder}
      */
-    public HexagonalGridBuilder setGridHeight(final int gridHeight) {
+    public HexagonalGridBuilder<T> setGridHeight(final int gridHeight) {
         this.gridHeight = gridHeight;
         return this;
     }
@@ -125,17 +122,13 @@ public final class  HexagonalGridBuilder {
      * @param orientation orientation
      * @return this {@link HexagonalGridBuilder}
      */
-    public HexagonalGridBuilder setOrientation(final HexagonOrientation orientation) {
+    public HexagonalGridBuilder<T> setOrientation(final HexagonOrientation orientation) {
         this.orientation = orientation;
         return this;
     }
 
     public GridLayoutStrategy getGridLayoutStrategy() {
         return gridLayout.getGridLayoutStrategy();
-    }
-
-    public Map<CubeCoordinate, Object> getCustomStorage() {
-        return customStorage;
     }
 
     /**
@@ -157,8 +150,17 @@ public final class  HexagonalGridBuilder {
      * @param gridLayout layout
      * @return this {@link HexagonalGridBuilder}.
      */
-    public HexagonalGridBuilder setGridLayout(final HexagonalGridLayout gridLayout) {
+    public HexagonalGridBuilder<T> setGridLayout(final HexagonalGridLayout gridLayout) {
         this.gridLayout = gridLayout;
+        return this;
+    }
+
+    public HexagonFactory<T> getHexagonFactory() {
+        return this.hexagonFactory;
+    }
+    
+    public HexagonalGridBuilder<T> setHexagonFactory(HexagonFactory<T> factory) {
+        this.hexagonFactory = factory;
         return this;
     }
 }

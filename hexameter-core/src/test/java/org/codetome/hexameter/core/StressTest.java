@@ -3,6 +3,7 @@ package org.codetome.hexameter.core;
 import org.codetome.hexameter.core.api.Hexagon;
 import org.codetome.hexameter.core.api.HexagonalGrid;
 import org.codetome.hexameter.core.api.HexagonalGridBuilder;
+import org.codetome.hexameter.core.internal.impl.TestHexagon;
 import org.junit.Before;
 import org.junit.Test;
 import rx.functions.Action1;
@@ -23,14 +24,15 @@ public class StressTest {
     private static final long EXPECTED_MAXIMUM_GENERATION_TIME = 2000;
     private static final long EXPECTED_MAXIMUM_FETCH_TIME = 2000;
 
-    private HexagonalGridBuilder hexagonalGridBuilder;
+    private HexagonalGridBuilder<TestHexagon> hexagonalGridBuilder;
 
     @Before
     public void setUp() {
-        hexagonalGridBuilder = new HexagonalGridBuilder()
+        hexagonalGridBuilder = new HexagonalGridBuilder<TestHexagon>()
                 .setGridHeight(BIG_GRID_HEIGHT)
                 .setGridWidth(BIG_GRID_WIDTH)
-                .setRadius(BIG_GRID_RADIUS);
+                .setRadius(BIG_GRID_RADIUS)
+                .setHexagonFactory(new TestHexagonFactory());;
     }
 
     @Test

@@ -19,7 +19,7 @@ import java.util.Set;
  * <li>Pathfinding between two {@link Hexagon}s (using obstacles)</li>
  * </ul>
  */
-public interface HexagonalGridCalculator {
+public interface HexagonalGridCalculator<T extends Hexagon> {
 
     /**
      * Calculates the distance (in hexagons) between two {@link Hexagon} objects on the grid.
@@ -37,7 +37,7 @@ public interface HexagonalGridCalculator {
      * @param distance distance
      * @return {@link Hexagon}s within distance (inclusive)
      */
-    Set<Hexagon> calculateMovementRangeFrom(Hexagon hexagon, int distance);
+    Set<T> calculateMovementRangeFrom(Hexagon hexagon, int distance);
 
     /**
      * Returns the Hexagon on the grid which is at the point resulted by rotating the <code>targetHex</code>'s
@@ -47,7 +47,7 @@ public interface HexagonalGridCalculator {
      * @param rotationDirection direction of the rotation
      * @return result
      */
-    Optional<Hexagon> rotateHexagon(Hexagon originalHex, Hexagon targetHex, RotationDirection rotationDirection);
+    Optional<T> rotateHexagon(Hexagon originalHex, Hexagon targetHex, RotationDirection rotationDirection);
 
 
     /**
@@ -57,7 +57,7 @@ public interface HexagonalGridCalculator {
      * @param radius radius
      * @return Set of hexagons or empty set if not applicable
      */
-    Set<Hexagon> calculateRingFrom(Hexagon centerHexagon, int radius);
+    Set<T> calculateRingFrom(Hexagon centerHexagon, int radius);
 
 
     /**
@@ -68,5 +68,5 @@ public interface HexagonalGridCalculator {
      * @param to hexgon to end line drawing
      * @return A list of hexagons
      */
-    List<Hexagon> drawLine(Hexagon from, Hexagon to);
+    List<T> drawLine(Hexagon from, Hexagon to);
 }

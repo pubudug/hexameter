@@ -17,11 +17,11 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 
-public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculator {
+public final class HexagonalGridCalculatorImpl<T extends Hexagon> implements HexagonalGridCalculator<T> {
 
-    private final HexagonalGrid hexagonalGrid;
+    private final HexagonalGrid<T> hexagonalGrid;
 
-    public HexagonalGridCalculatorImpl(final HexagonalGrid hexagonalGrid) {
+    public HexagonalGridCalculatorImpl(final HexagonalGrid<T> hexagonalGrid) {
         this.hexagonalGrid = hexagonalGrid;
     }
 
@@ -34,8 +34,8 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
     }
 
     @Override
-    public Set<Hexagon> calculateMovementRangeFrom(final Hexagon hexagon, final int distance) {
-        final Set<Hexagon> ret = new HashSet<>();
+    public Set<T> calculateMovementRangeFrom(final Hexagon hexagon, final int distance) {
+        final Set<T> ret = new HashSet<>();
         for (int x = -distance; x <= distance; x++) {
             for (int y = max(-distance, -x - distance); y <= min(distance, -x + distance); y++) {
                 final int z = -x - y;
@@ -43,7 +43,7 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
                 final int tmpZ = hexagon.getGridZ() + z;
                 final CubeCoordinate tempCoordinate = CubeCoordinate.fromCoordinates(tmpX, tmpZ);
                 if (hexagonalGrid.containsCubeCoordinate(tempCoordinate)) {
-                    final Hexagon hex = hexagonalGrid.getByCubeCoordinate(tempCoordinate).get();
+                    final T hex = hexagonalGrid.getByCubeCoordinate(tempCoordinate).get();
                     ret.add(hex);
                 }
             }
@@ -52,7 +52,7 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
     }
 
     @Override
-    public Optional<Hexagon> rotateHexagon(Hexagon originalHex, Hexagon targetHex, RotationDirection rotationDirection) {
+    public Optional<T> rotateHexagon(Hexagon originalHex, Hexagon targetHex, RotationDirection rotationDirection) {
         final int diffX = targetHex.getGridX() - originalHex.getGridX();
         final int diffZ = targetHex.getGridZ() - originalHex.getGridZ();
         final CubeCoordinate diffCoord = CubeCoordinate.fromCoordinates(diffX, diffZ);
@@ -64,12 +64,12 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
     }
 
     @Override
-    public Set<Hexagon> calculateRingFrom(Hexagon centerHexagon, int radius) {
-        final Set<Hexagon> result = new HashSet<>();
+    public Set<T> calculateRingFrom(Hexagon centerHexagon, int radius) {
+        final Set<T> result = new HashSet<>();
         final int neighborIndex = 0;
         Hexagon currentHexagon = centerHexagon;
         for (int i = 0; i < radius; i++) {
-            final Optional<Hexagon> neighbor = hexagonalGrid.getNeighborByIndex(currentHexagon, neighborIndex);
+            final Optional<T> neighbor = hexagonalGrid.getNeighborByIndex(currentHexagon, neighborIndex);
             if (neighbor.isPresent()) {
                 currentHexagon = neighbor.get();
             } else {
@@ -80,9 +80,9 @@ public final class HexagonalGridCalculatorImpl implements HexagonalGridCalculato
     }
 
     @Override
-    public List<Hexagon> drawLine(Hexagon from, Hexagon to) {
+    public List<T> drawLine(Hexagon from, Hexagon to) {
         int distance = calculateDistanceBetween(from, to);
-        List<Hexagon> results = new LinkedList<>();
+        List<T> results = new LinkedList<>();
         for (int i = 0; i <= distance; i++) {
             CubeCoordinate interpolatedCoordinate = cubeLinearInterpolate(from.getCubeCoordinate(),
                     to.getCubeCoordinate(), (1.0 / distance) * i);

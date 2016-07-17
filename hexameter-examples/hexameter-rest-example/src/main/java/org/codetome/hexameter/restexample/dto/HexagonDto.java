@@ -40,10 +40,6 @@ public class HexagonDto {
             points[i][1] = hexPoints.get(i).getCoordinateY();
         }
         result.setPoints(points);
-        final Optional<DefaultSatelliteData> satelliteData = hexagon.getSatelliteData();
-        if (satelliteData.isPresent()) {
-            result.setSatelliteData(satelliteData.get());
-        }
         return result;
     }
 }

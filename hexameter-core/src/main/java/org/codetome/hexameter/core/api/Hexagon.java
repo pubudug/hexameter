@@ -1,7 +1,5 @@
 package org.codetome.hexameter.core.api;
 
-import org.codetome.hexameter.core.backport.Optional;
-
 import java.util.Collection;
 
 /**
@@ -67,25 +65,5 @@ public interface Hexagon {
      * @return center y
      */
     double getCenterY();
-
-    /**
-     * Returns this {@link Hexagon}'s satellite data.
-     *
-     * @param <T> type of data
-     * @return optional satellite data
-     */
-    <T extends SatelliteData> Optional<T> getSatelliteData();
-
-    /**
-     * Can be used to add arbitrary satellite data to a {@link Hexagon}.
-     * @param data data
-     * @param <T> type of data
-     */
-    <T extends SatelliteData> void setSatelliteData(T data);
-
-    /**
-     * Clears the satellite data of this Hexagon.
-     */
-    void clearSatelliteData();
 
 }

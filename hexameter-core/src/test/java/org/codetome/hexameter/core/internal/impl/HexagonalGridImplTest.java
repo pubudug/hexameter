@@ -1,6 +1,7 @@
 package org.codetome.hexameter.core.internal.impl;
 
 import org.codetome.hexameter.core.api.CubeCoordinate;
+import org.codetome.hexameter.core.TestHexagonFactory;
 import org.codetome.hexameter.core.api.CoordinateConverter;
 import org.codetome.hexameter.core.api.DefaultSatelliteData;
 import org.codetome.hexameter.core.api.Hexagon;
@@ -38,12 +39,13 @@ public class HexagonalGridImplTest {
     private static final int GRID_X_TO = 4;
     private static final int GRID_Z_FROM = 3;
     private static final int GRID_Z_TO = 5;
-    private HexagonalGrid target;
-    private HexagonalGridBuilder builder;
+    private HexagonalGrid<TestHexagon> target;
+    private HexagonalGridBuilder<TestHexagon> builder;
 
     @Before
     public void setUp() throws Exception {
-        builder = new HexagonalGridBuilder().setGridHeight(GRID_HEIGHT).setGridWidth(GRID_WIDTH).setRadius(RADIUS).setOrientation(ORIENTATION);
+        builder = new HexagonalGridBuilder<TestHexagon>().setGridHeight(GRID_HEIGHT).setGridWidth(GRID_WIDTH).setRadius(RADIUS).setOrientation(ORIENTATION);
+        builder.setHexagonFactory(new TestHexagonFactory());
         target = builder.build();
     }
 
@@ -70,7 +72,7 @@ public class HexagonalGridImplTest {
 
     @Test
     public void shouldReturnProperHexagonsWhenEachHexagonIsTestedInAGivenGrid() {
-        final Observable<Hexagon> hexagons = target.getHexagons();
+        final Observable<TestHexagon> hexagons = target.getHexagons();
         final Set<String> expectedCoordinates = new HashSet<>();
         for (int x = 0; x < GRID_WIDTH; x++) {
             for (int y = 0; y < GRID_HEIGHT; y++) {
@@ -107,7 +109,7 @@ public class HexagonalGridImplTest {
         expected.add(target.getByCubeCoordinate(fromCoordinates(3, 5)).get());
         expected.add(target.getByCubeCoordinate(fromCoordinates(4, 5)).get());
 
-        final Observable<Hexagon> actual = target.getHexagonsByCubeRange(fromCoordinates(GRID_X_FROM, GRID_Z_FROM), fromCoordinates(GRID_X_TO, GRID_Z_TO));
+        final Observable<TestHexagon> actual = target.getHexagonsByCubeRange(fromCoordinates(GRID_X_FROM, GRID_Z_FROM), fromCoordinates(GRID_X_TO, GRID_Z_TO));
         final AtomicInteger count = new AtomicInteger();
         actual.forEach(new Action1<Hexagon>() {
             @Override
@@ -141,7 +143,7 @@ public class HexagonalGridImplTest {
         expected.add(target.getByCubeCoordinate(fromCoordinates(1, 5)).get());
         expected.add(target.getByCubeCoordinate(fromCoordinates(2, 5)).get());
 
-        final Observable<Hexagon> actual = target.getHexagonsByOffsetRange(GRID_X_FROM, GRID_X_TO, GRID_Z_FROM, GRID_Z_TO);
+        final Observable<TestHexagon> actual = target.getHexagonsByOffsetRange(GRID_X_FROM, GRID_X_TO, GRID_Z_FROM, GRID_Z_TO);
         final AtomicInteger count = new AtomicInteger();
         actual.forEach(new Action1<Hexagon>() {
             @Override
@@ -170,7 +172,7 @@ public class HexagonalGridImplTest {
     public void shouldReturnHexagonWhenGetByGridCoordinateIsCalledWithProperCoordinates() {
         final int gridX = 2;
         final int gridZ = 3;
-        final Optional<Hexagon> hex = target.getByCubeCoordinate(fromCoordinates(gridX, gridZ));
+        final Optional<TestHexagon> hex = target.getByCubeCoordinate(fromCoordinates(gridX, gridZ));
         assertTrue(hex.isPresent());
     }
 
@@ -178,7 +180,7 @@ public class HexagonalGridImplTest {
     public void shouldBeEmptyWhenGetByGridCoordinateIsCalledWithInvalidCoordinates() {
         final int gridX = 20;
         final int gridZ = 30;
-        Optional<Hexagon> result = target.getByCubeCoordinate(fromCoordinates(gridX, gridZ));
+        Optional<TestHexagon> result = target.getByCubeCoordinate(fromCoordinates(gridX, gridZ));
         Assert.assertFalse(result.isPresent());
     }
 
@@ -219,7 +221,7 @@ public class HexagonalGridImplTest {
         expected.add(target.getByCubeCoordinate(fromCoordinates(3, 8)).get());
         expected.add(target.getByCubeCoordinate(fromCoordinates(2, 8)).get());
         expected.add(target.getByCubeCoordinate(fromCoordinates(2, 7)).get());
-        final Iterable<Hexagon> actual = target.getNeighborsOf(hex);
+        final Iterable<TestHexagon> actual = target.getNeighborsOf(hex);
         assertEquals(expected, actual);
     }
 
@@ -229,18 +231,8 @@ public class HexagonalGridImplTest {
         final Set<Hexagon> expected = new HashSet<>();
         expected.add(target.getByCubeCoordinate(fromCoordinates(5, 8)).get());
         expected.add(target.getByCubeCoordinate(fromCoordinates(4, 9)).get());
-        final Iterable<Hexagon> actual = target.getNeighborsOf(hex);
+        final Iterable<TestHexagon> actual = target.getNeighborsOf(hex);
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldProperlyClearSatelliteDataWhenClearSatelliteDataIsCalled() {
-        final Hexagon testHex = target.getByCubeCoordinate(fromCoordinates(2, 3)).get();
-        final SatelliteData data = new DefaultSatelliteData() {
-        };
-        testHex.setSatelliteData(data);
-        target.clearSatelliteData();
-        assertTrue(!testHex.getSatelliteData().isPresent());
     }
 
     @Test
