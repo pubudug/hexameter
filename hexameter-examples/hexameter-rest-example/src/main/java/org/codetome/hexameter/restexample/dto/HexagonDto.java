@@ -1,7 +1,6 @@
 package org.codetome.hexameter.restexample.dto;
 
 import lombok.Data;
-import org.codetome.hexameter.core.api.DefaultSatelliteData;
 import org.codetome.hexameter.core.api.Hexagon;
 import org.codetome.hexameter.core.api.Point;
 import org.codetome.hexameter.core.backport.Optional;
@@ -27,8 +26,6 @@ public class HexagonDto {
     /**
      * Represents the satellite data stored in the source Hexagon (if any).
      */
-    private DefaultSatelliteData satelliteData;
-
     public static HexagonDto fromHexagon(final Hexagon hexagon) {
         HexagonDto result = new HexagonDto();
         result.setCenterPoint(new Double[]{hexagon.getCenterX(), hexagon.getCenterY()});

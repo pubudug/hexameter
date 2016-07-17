@@ -349,7 +349,6 @@ public class DemoComposite extends Composite {
                     prevSelected = currSelected;
                     currSelected = hex;
                     drawDistance();
-                    SatelliteDataImpl data;
                     hex.setSelected(!hex.isSelected());
                 }
                 canvas.redraw();

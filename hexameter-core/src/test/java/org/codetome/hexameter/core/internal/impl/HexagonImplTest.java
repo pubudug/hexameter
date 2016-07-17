@@ -1,18 +1,14 @@
 package org.codetome.hexameter.core.internal.impl;
 
 import org.codetome.hexameter.core.api.CubeCoordinate;
-import org.codetome.hexameter.core.api.DefaultSatelliteData;
 import org.codetome.hexameter.core.api.Hexagon;
 import org.codetome.hexameter.core.api.Point;
-import org.codetome.hexameter.core.api.SatelliteData;
 import org.codetome.hexameter.core.internal.GridData;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Math.round;
 import static junit.framework.Assert.assertEquals;
